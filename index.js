@@ -31,6 +31,41 @@ const conn = mysql.createConnection({
 // 선연결
 conn.connect();
 
+//회원가입 요청
+app.post("/join", async (req, res)=> {
+    const mytextpass = req.body.password;
+    let myPass = "";
+    const {m_name, m_password, m_id, m_nickname, m_birth, m_gender, m_phone, m_add1, m_add2, m_comnick} = req.body
+    if(mytextpass != "" && mytextpass != undefined){
+        bcrypt.genSalt(saltRounds, function(err, salt){
+            bcrypt.hash(mytextpass, salt, function(err, hash){
+                myPass = hash;
+                conn.query(`insert into member(m_name, m_password, m_id, m_nickname, m_birth, m_gender, m_phone, m_address, m_comnick) values('${m_name}','${myPass}','${m_id}','${m_nickname}','${m_birth}','${m_gender}','${m_phone}','${m_add1}${m_add2}','${m_comnick}')`
+                , (err, result, fields)=>{
+                    console.log(result)
+                    if(result){
+                        console.log("회원가입성공")
+                        res.send("등록되었습니다")
+                    }
+                    console.log(err)
+                })
+            })
+        })
+    }
+})
+
+//아이디 중복 확인
+app.get("/check/:m_id", async (req, res) => {
+    const {m_id} = req.params;
+    conn.query(`select * from member where m_id='${m_id}'`, (err, result, fields) => {
+        if(result){
+            console.log(result)
+            res.send(result[0])
+        }
+        //console.log(err)
+    })
+})
+
 
 app.listen(port, ()=>{
     console.log("서버가 동작하고 있습니다.")
