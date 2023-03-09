@@ -33,10 +33,13 @@ conn.connect();
 
 //회원가입 요청
 app.post("/join", async (req, res)=> {
-    const mytextpass = req.body.password;
+    console.log(req)
+    const mytextpass = req.body.m_password;
     let myPass = "";
     const {m_name, m_password, m_id, m_nickname, m_birth, m_gender, m_phone, m_add1, m_add2, m_comnick} = req.body
+    console.log(11111)
     if(mytextpass != "" && mytextpass != undefined){
+        console.log(113333)
         bcrypt.genSalt(saltRounds, function(err, salt){
             bcrypt.hash(mytextpass, salt, function(err, hash){
                 myPass = hash;
@@ -51,6 +54,8 @@ app.post("/join", async (req, res)=> {
                 })
             })
         })
+    }else{
+        console.log("에러발생")
     }
 })
 
@@ -62,9 +67,60 @@ app.get("/check/:m_id", async (req, res) => {
             console.log(result)
             res.send(result[0])
         }
-        //console.log(err)
+        console.log(err)
     })
 })
+
+//닉네임 중복 확인
+app.get("/check/:m_nickname", async (req, res) => {
+    const {m_nickname} = req.params;
+    conn.query(`select * from member where m_nickname='${m_nickname}'`, (err, result, fields) => {
+        if(result){
+            console.log(result)
+            res.send(result[0])
+        }
+        console.log(err)
+    })
+})
+
+//등록된 추천 닉네임 확인
+app.get("/check/:m_comnick", async (req, res) => {
+    const {m_comnick} = req.params;
+    conn.query(`select * from member where m_id='${m_comnick}'`, (err, result, fields) => {
+        if(result){
+            console.log(result)
+            res.send(result[0])
+        }
+        console.log(err)
+    })
+})
+
+
+//로그인 요청
+app.post("/login", async (req, res)=> {
+    const {logId, logPass} = req.body
+    conn.query(`select * from member where m_id = '${logId}'`, 
+    (err, result, fields)=> {
+        console.log(result)
+        if(result != undefined && result[0] != undefined){
+            bcrypt.compare(logPass, result[0].m_password, function(err, newPassword){
+                console.log(newPassword)
+                console.log(logPass)
+                if(newPassword){
+                    console.log("로그인 성공")
+                    console.log(result)
+                    res.send(result)
+                }
+            })
+        }else {
+            console.log("데이터가 없습니다.")
+            console.log('로그인 실패')
+            res.send("로그인 실패")
+        }
+    })
+})
+
+
 
 
 app.listen(port, ()=>{
