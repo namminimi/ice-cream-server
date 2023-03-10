@@ -120,7 +120,21 @@ app.post("/login", async (req, res)=> {
     })
 })
 
-
+//아이디찾기
+app.post("/findId", async (req, res) => {
+    const {findName, findPhone} = req.body
+    conn.query(`select * from member where m_name= '${findName}' and m_phone ='${findPhone}'`,
+    (err, result, fields) =>{
+        if(result != undefined && result[0] != undefined){
+            console.log(result)
+            res.send(result)
+        }else {
+            console.log(err)
+            console.log("조회불가")
+            res.send("조회불가")
+        }
+    })
+})
 
 
 app.listen(port, ()=>{
