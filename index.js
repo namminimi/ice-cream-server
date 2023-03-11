@@ -137,6 +137,48 @@ app.post("/findId", async (req, res) => {
 })
 
 
+//비밀번호 찾기
+app.post("/findPass", async (req, res) => {
+    const {findId, findName, findPhone} = req.body
+    conn.query(`select * from member where m_name= '${findName}' and m_phone ='${findPhone}' and m_Id = '${findId}'`,
+    (err, result, fields) =>{
+        if(result != undefined && result[0] != undefined){
+            console.log(result)
+            res.send(result)
+        }else {
+            console.log(err)
+            console.log("조회불가")
+            res.send("조회불가")
+        }
+    })
+})
+
+//비밀번호 변경하기
+app.patch("/editpass", async (req, res) => {
+    const {newPass, userId} = req.body
+    const mytextpass = newPass
+    console.log(newPass)
+    let myPass =''
+    if(mytextpass != '' && mytextpass !=undefined){
+        bcrypt.genSalt(saltRounds, function(err, salt){
+            bcrypt.hash(mytextpass, salt, function(err, hash){
+                myPass = hash;
+                console.log(myPass)
+                console.log(userId)
+                conn.query(`update member set m_password='${myPass}' where m_id='${userId}'`,
+                (err, result, fields)=>{
+                    if(result){
+                        res.send("등록되었습니다")
+                        console.log(result)
+                    }
+                    console.log(err)
+                })
+            })
+        })
+    }
+})
+
+
 app.listen(port, ()=>{
     console.log("서버가 동작하고 있습니다.")
 })
