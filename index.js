@@ -20,6 +20,29 @@ app.use(cors());
 
 app.use(express.json());
 
+//upload 폴더를 클라이언트에 접근가능
+app.use('/upload', express.static('upload'));
+
+//storage 생성
+const storage = multer.diskStorage({
+    destination: (req, file, cd) => {
+        cd(null, 'upload/products/');
+    },
+    filename: (req, file, cd) => {
+        const newFilename = file.originalname;
+        cd(null, newFilename);
+    }
+});
+//upload 객체 생성
+const upload = multer({storage: storage})
+
+//upload 경로로 post 요청했을 시 응답 구현
+app.post('/upload', upload.single('file'), (req,res)=>{
+    res.send({
+        imgUrl: req.file.filename
+    })
+})
+
 const conn = mysql.createConnection({
     host: "hera-database.c6v9c00axeyk.ap-northeast-2.rds.amazonaws.com",
     user: "admin",
@@ -159,7 +182,7 @@ app.patch("/editpass", async (req, res) => {
     const mytextpass = newPass
     console.log(newPass)
     let myPass =''
-    if(mytextpass != '' && mytextpass !=undefined){
+    if(mytextpass != '' && mytextpass != undefined){
         bcrypt.genSalt(saltRounds, function(err, salt){
             bcrypt.hash(mytextpass, salt, function(err, hash){
                 myPass = hash;
@@ -176,6 +199,18 @@ app.patch("/editpass", async (req, res) => {
             })
         })
     }
+})
+
+//상품 리스트
+app.get('/products', (req, res) => {
+    conn.query('select * from products',
+    (err, result, fields)=>{
+        if(result){
+            console.log(result)
+            res.send(result);
+        }
+        console.log(err)
+    })
 })
 
 
