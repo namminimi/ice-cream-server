@@ -213,6 +213,19 @@ app.get('/products', (req, res) => {
     })
 })
 
+//상품 상세보기
+app.get('/productDetails/:no', (req, res)=>{
+    const {no} = req.params;
+    conn.query(`select * from products where p_no=${no}`,
+    (err, result, fields)=>{
+        if(result){
+            console.log(result)
+            res.send(result)
+        }
+        console.log(err)
+    })
+})
+
 
 app.listen(port, ()=>{
     console.log("서버가 동작하고 있습니다.")
