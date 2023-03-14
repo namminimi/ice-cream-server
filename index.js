@@ -226,6 +226,20 @@ app.get('/productDetails/:no', (req, res)=>{
     })
 })
 
+//검색하기
+app.get("/search/:title", async (req, res) => {
+    const {title} = req.params
+    conn.query(`select * from products where p_title like '%${title}%'`,
+    (err, result, fields) =>{
+        if(result) {
+            console.log(result)
+            res.send(result)
+        }
+        console.log(err)
+    })
+})
+
+
 
 app.listen(port, ()=>{
     console.log("서버가 동작하고 있습니다.")
