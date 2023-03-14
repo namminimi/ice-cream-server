@@ -239,6 +239,41 @@ app.get("/search/:title", async (req, res) => {
     })
 })
 
+//브랜드별 리스트
+app.get("/brand", async (req, res)=>{
+    conn.query(`select * from brandList`,
+    (err, result, fields)=>{
+        if(result){
+            console.log(result)
+            res.send(result)
+        }
+        console.log(err)
+    })
+})
+
+//브랜드 선택
+app.get("/selectBr/:brand", async (req, res)=> {
+    const {brand} = req.params
+    if(brand === "전체"){
+        conn.query(`select * from products`, 
+        (err, result, fields)=> {
+            if(result){
+                console.log(result)
+                res.send(result)
+            }
+            console.log(err)
+        })
+
+    }else
+    conn.query(`select * from products where p_brand='${brand}'`, 
+    (err, result, fields)=> {
+        if(result){
+            console.log(result)
+            res.send(result)
+        }
+        console.log(err)
+    })
+})
 
 
 app.listen(port, ()=>{
