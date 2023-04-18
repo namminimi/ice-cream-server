@@ -276,7 +276,7 @@ app.get("/selectBr/:brand", async (req, res)=> {
 })
 //공지사항 요청
 app.get("/notice", async (req, res)=>{
-    conn.query(`select * from notice order by w_no desc`,
+    conn.query(`select * from notice order by w_no asc`,
     (err, result, fields)=>{
         if(result){
             //console.log(result)
@@ -367,7 +367,7 @@ app.post('/carts', async (req,res)=>{
         console.log(err)
     })
 })
-
+//로그인 아이디 장바구니 조회
 app.get('/sendCart/:id', async (req,res)=>{
     const {id} = req.params
     conn.query(`select * from cart where c_userid='${id}'`,
@@ -432,7 +432,7 @@ app.post('/end', async (req,res)=>{
         console.log(err)
     })
 })
-
+//회원 탈퇴
 app.delete('/deleteMember/:userId', async (req, res)=>{
     const {userId} = req.params
     console.log(1111)
@@ -445,7 +445,7 @@ app.delete('/deleteMember/:userId', async (req, res)=>{
         console.log(err)
     })
 })
-
+//상품 등록
 app.post('/addIce', async(req, res) => {
     const {p_title, p_dsce, p_img1, p_img2, p_img3, p_img4, p_brand, p_taste, p_price, p_amount, p_point} = req.body
     console.log(req.body)
