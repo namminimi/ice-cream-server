@@ -276,7 +276,7 @@ app.get("/selectBr/:brand", async (req, res)=> {
 })
 //공지사항 요청
 app.get("/notice", async (req, res)=>{
-    conn.query(`select * from notice order by w_no asc`,
+    conn.query(`select * from notice order by w_no desc`,
     (err, result, fields)=>{
         if(result){
             //console.log(result)
